@@ -132,7 +132,7 @@ fi
 rpathflags="-Wl,-rpath -Wl,$SYSROOT/lib64"
 exec "$GCC" $rpathflags "$@"' | \
 sed "s@TYPE@${TYPE}@g" | \
-sed "s@VERSION@${VERSION}@g" | \
+sed "s@VERSION@${MAJORVERSION}@g" | \
 sed "s@INSTALLDIR@${INSTALLDIR}@g"
 }
 
