@@ -23,10 +23,11 @@ GITDIR=/some/gcc
 BINARYDIR=/some/path/bin
 
 VERSION="$1"
+MAJORVERSION="${VERSION::-2}"
 ALLTHREADS=$(grep -c processor /proc/cpuinfo)
 NUMTHREADS=$((ALLTHREADS / 2))
-BUILDDIR=${GITDIR}-${VERSION}-build
-INSTALLDIR=${GITDIR}-${VERSION}
+BUILDDIR=${GITDIR}-${MAJORVERSION}-build
+INSTALLDIR=${GITDIR}-${MAJORVERSION}
 mkdir -p ${BUILDDIR}
 mkdir -p ${INSTALLDIR}
 mkdir -p ${BINARYDIR}
@@ -89,7 +90,7 @@ ${GITDIR}/configure --build=x86_64-linux-gnu \
                     --no-create \
                     --no-recursion \
                     --prefix=${INSTALLDIR} \
-                    --program-suffix=-${VERSION} \
+                    --program-suffix=-${MAJORVERSION} \
                     --target=x86_64-linux-gnu \
                     --with-abi=m64 \
                     --with-arch-32=i686 \
@@ -110,10 +111,10 @@ echo -n "[$(date +"%Y-%m-%d %T")] Installing compiler..."
 make -j${NUMTHREADS} install > ${BUILDDIR}/install.log 2>&1
 
 # E.g., remove old gcc-ar-14
-# E.g., new link: ${BINARYDIR}/gcc-ar-14 -> ${INSTALLDIR}/bin/gcc-ar-14.0
+# E.g., new link: ${BINARYDIR}/gcc-ar-14 -> ${INSTALLDIR}/bin/gcc-ar-14
 for BINARY in "gcc-ar" "gcc-nm" "gcc-ranlib" "gcov" "gcov-dump" "gcov-tool" "lto-dump"; do
-    rm -f ${BINARYDIR}/${BINARY}-${VERSION::-2}
-    ln -f -s ${INSTALLDIR}/bin/${BINARY}-${VERSION} ${BINARYDIR}/${BINARY}-${VERSION::-2}
+    rm -f ${BINARYDIR}/${BINARY}-${MAJORVERSION}
+    ln -f -s ${INSTALLDIR}/bin/${BINARY}-${MAJORVERSION} ${BINARYDIR}/${BINARY}-${MAJORVERSION}
 done
 echo "done!"
 
@@ -137,7 +138,7 @@ sed "s@INSTALLDIR@${INSTALLDIR}@g"
 
 echo -n "[$(date +"%Y-%m-%d %T")] Creating wrapper..."
 for TYPE in "gcc" "g++" "c++" "cpp"; do
-    FILE="${BINARYDIR}/${TYPE}-${VERSION::-2}"
+    FILE="${BINARYDIR}/${TYPE}-${MAJORVERSION}"
     rm -f ${FILE}
     echo_wrapper > ${FILE}
     chmod 0755 ${FILE}
@@ -147,4 +148,3 @@ echo "done!"
 echo -n "[$(date +"%Y-%m-%d %T")] Removing build directory..."
 rm -fdr ${BUILDDIR}
 echo "done!"
-
