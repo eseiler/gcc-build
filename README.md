@@ -33,12 +33,15 @@ The script will create a temporary `-build` directory and an install directory, 
 These directories will be sibling directories of the GCC checkout.
 ```bash
 |-- gcc
-|-- gcc-13.2
-|-- gcc-13.2-build # Temporary, will be removed after successful run.
+|-- gcc-13
+|-- gcc-13-build # Temporary, will be removed after successful run.
 ```
 
 Wrappers are created for GCC compiler calls (`g++`, `cpp`, `gcc`, `c++`) within `BINARYDIR`.
 For all other binaries, a symlink will be created.
+
+Subsequent calls with a new minor version, e.g., running the script for `13.2`, when `13.1` is already installed,
+will overwrite the installation. This preserves the linkage of, for example, `libstdc++`.
 
 # Limitations
 
@@ -50,19 +53,3 @@ The script then needs to be run from a root shell:
 sudo bash
 gcc-build.sh 13.2
 ```
-
-## Versioning
-
-Binaries are installed with only a major version suffix. For example, `gcc-build.sh 13.2` will create `gcc-13`,
-`g++-13`, and so on.
-https://github.com/eseiler/gcc-build/blob/c790c7456e1cb1ae8191056a82f235a17b6d58e4/gcc-build.sh#L140
-Can be changed to
-```bash
-    FILE="${BINARYDIR}/${TYPE}-${VERSION}"
-```
-to install `gcc-13.1`, `g++-13.1` etc.
-
-Out-of-date install directories will not be automatically deleted. Running `gcc-build.sh 13.2` will not delete the
-gcc-13.1 install directory, if present. Likewise, if the above adaptation for versioned install is done, `gcc-13.1`
-would not be removed.
-
