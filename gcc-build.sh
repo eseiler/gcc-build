@@ -8,7 +8,7 @@
 set -eEuo pipefail
 
 if [ "$#" -ne 1 ]; then
-    echo -e "Usage: build.sh <version>\nFor example, build.sh 13.2"
+    echo -e "Usage: gcc-build.sh <version>\nFor example, gcc-build.sh 13.2"
     exit -1
 fi
 
@@ -138,6 +138,7 @@ sed "s@INSTALLDIR@${INSTALLDIR}@g"
 echo -n "[$(date +"%Y-%m-%d %T")] Creating wrapper..."
 for TYPE in "gcc" "g++" "c++" "cpp"; do
     FILE="${BINARYDIR}/${TYPE}-${VERSION::-2}"
+    rm -f ${FILE}
     echo_wrapper > ${FILE}
     chmod 0755 ${FILE}
 done
